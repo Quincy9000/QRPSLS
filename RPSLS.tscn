@@ -12,7 +12,7 @@ script/source = "extends Control
 
 var player_wins = 0
 var tie_games = 0
-var computer_wins = 0
+var opponent_wins = 0
 
 export(int)var minX = 720
 export(int)var minY = 540
@@ -22,6 +22,13 @@ onready var label = $Panel/CenterContainer/VBoxContainer/MarginContainer4/Center
 onready var label2 = $Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer/MarginContainer2/Label2
 
 onready var label3 = $Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer/MarginContainer3/Label3
+
+class Winner:
+	var number
+	var word
+	func _init(n, w):
+		number = n
+		word = w
 
 class RPSLS:
 	var _choice
@@ -44,20 +51,19 @@ class RPSLS:
 		_win_against1 = w1
 		_win_against2 = w2
 
-	func decide(other):
+	func decide(other) -> Winner:
 		var n = other._choice
 		if n == _choice:
 			print(\"Tie.\")
-			return -1
+			return Winner.new(-1, \"Tie.\")
 		elif n == _counter1 or n == _counter2:
-			other.decide(self)
-			return 0
+			return Winner.new(0, other.decide(self).word)
 		elif n == _win_against1:
 			print(quote1)
-			return 1
-		elif n == _win_against2:
+			return Winner.new(1, quote1)
+		else:
 			print(quote2)
-			return 1
+			return Winner.new(1, quote2)
 
 var rock
 var paper
@@ -72,33 +78,43 @@ const LIZARD = 3
 const SPOCK = 4
 
 var cpu_choices
-
 var cpu_choice = -1
+var connection
 
 func computer_choice():
-	cpu_choice = cpu_choices[randi() % len(cpu_choices)]
+	return cpu_choices[randi() % len(cpu_choices)]
 
-func check_game(player):
-	var c = cpu_choice.decide(player)
-	if c == 1:
-		computer_wins += 1
-	elif c == 0:
+func check_game(player, other: RPSLS):
+	var c: Winner = other.decide(player)
+	$Panel/InfoLabel.text = c.word
+	if c.number == 1:
+		$Panel/InfoLabel.text += \" You Lose!\"
+		opponent_wins += 1
+	elif c.number  == 0:
+		$Panel/InfoLabel.text += \" You Win!\"
 		player_wins += 1
 	else:
 		tie_games += 1
-	computer_choice()
 
-var connection
+var other_player_choice
+
+var my_multi_choice
+
+remote func send_choice(my_choice):
+	$Panel/InfoLabel.text = \"Opponent sent their choice!\"
+	other_player_choice = my_choice
 
 func _player_connected(id):
 	# Called on both clients and server when a peer connects. Send my info to it.
 	#rpc_id(id, \"register_player\", player_name)
+	restart_game()
 	print(\"player connected\")
 
 func _player_disconnected(id):
 	print(\"disconnected\")
 
 func _connected_ok():
+	restart_game()
 	print(\"connected ok\")
 
 func _server_disconnected():
@@ -106,6 +122,11 @@ func _server_disconnected():
 
 func _connected_fail():
 	print(\"connected fail\")
+
+func restart_game():
+	opponent_wins = 0
+	player_wins = 0
+	tie_games = 0
 
 func _ready() -> void:
 	get_tree().connect(\"network_peer_connected\", self, \"_player_connected\")
@@ -119,18 +140,14 @@ func _ready() -> void:
 
 	print(output)
 
-	$Panel/YourIp.text = \"UR IP:\\n\" + str(output[0])
+	$Panel/YourIp.text = \"IP\\n\" + str(output[0])
 
 	randomize()
 
 	rock = RPSLS.new(ROCK, PAPER, SPOCK, LIZARD, SCISSORS, \"Rock crushes lizard.\", \"Rock crushes scissors.\")
-
 	paper = RPSLS.new(PAPER, LIZARD, SCISSORS, SPOCK, ROCK, \"Paper disproves Spock.\", \"Paper covers rock.\")
-
 	scissors = RPSLS.new(SCISSORS, SPOCK, ROCK, PAPER, LIZARD, \"Scissors cuts paper.\", \"Scissors decapitates lizard.\")
-
 	lizard = RPSLS.new(LIZARD, ROCK, SCISSORS, SPOCK, PAPER, \"Lizard poisons Spock.\", \"Lizard eats paper.\")
-
 	spock = RPSLS.new(SPOCK, LIZARD, PAPER, ROCK, SCISSORS, \"Spock vaporizes rock.\", \"Spock smashes scissors.\")
 
 	cpu_choices = [rock, paper, scissors, lizard, spock]
@@ -139,17 +156,24 @@ func _ready() -> void:
 
 	get_node(\"/root\").connect(\"size_changed\", self, \"resize\")
 
-func _input(event: InputEvent) -> void:
-	pass
+func set_score():
+	label.text = \"Player Wins: %s\" % player_wins
+	label2.text = \"Tie Games: %s\" % tie_games
+	label3.text = \"Computer Wins: %s\" % opponent_wins
 
 func _process(delta: float) -> void:
+	set_score()
 
-	label.text = \"Player Wins: %s\" % player_wins
+func check_local_or_mult_game(you, cpu):
+	if not connection:
+		check_game(you, cpu)
+	else:
+		check_mult_game(you)
 
-	label2.text = \"Tie Games: %s\" % tie_games
-
-	label3.text = \"Computer Wins: %s\" % computer_wins
-
+func check_mult_game(you):
+	if other_player_choice:
+		check_game(you, other_player_choice)
+	rpc(\"send_choice\", you)
 
 func resize():
     var currentSize = OS.get_window_size()
@@ -162,27 +186,28 @@ func resize():
 
 func _on_TextureButton_pressed() -> void:
 	print(\"Rock\")
-	check_game(rock)
+	check_local_or_mult_game(rock, computer_choice())
 
 func _on_TextureButton2_pressed() -> void:
 	print(\"paper\")
-	check_game(paper)
+	check_local_or_mult_game(paper, computer_choice())
 
 func _on_TextureButton3_pressed() -> void:
 	print(\"scissors\")
-	check_game(scissors)
+	check_local_or_mult_game(scissors, computer_choice())
 
 func _on_TextureButton4_pressed() -> void:
 	print(\"lizard\")
-	check_game(lizard)
+	check_local_or_mult_game(lizard, computer_choice())
 
 func _on_TextureButton5_pressed() -> void:
 	print(\"spock\")
-	check_game(spock)
+	check_local_or_mult_game(spock, computer_choice())
 
 func _on_Connect_pressed() -> void:
 	get_tree().set_network_peer(null)
 	print(\"joining server\")
+	$Panel/InfoLabel.text = \"Joining Server %s!\" % $Panel/IP.text
 	connection = NetworkedMultiplayerENet.new()
 	var ip = $Panel/IP.text.strip_edges()
 	print(connection.create_client(ip, 4567))
@@ -191,6 +216,7 @@ func _on_Connect_pressed() -> void:
 func _on_Button_pressed() -> void:
 	get_tree().set_network_peer(null)
 	print(\"creating server\")
+	$Panel/InfoLabel.text = \"Creating Server, Give IP to friend!\"
 	connection = NetworkedMultiplayerENet.new()
 	connection.create_server(4567, 2)
 	get_tree().set_network_peer(connection)
@@ -200,11 +226,16 @@ func send_message():
 	$Panel/ChatInput.text = \"\"
 
 remotesync func write(msg):
-	print(\"hi\")
 	$Panel/Chat.text += msg
 
 func _on_Send_Message_pressed() -> void:
-	send_message()"
+	send_message()
+
+func _on_KillServer_pressed() -> void:
+	$Panel/InfoLabel.text = \"Disconnected from Online Game.\"
+	get_tree().set_network_peer(null)
+	connection = null
+"
 
 [sub_resource type="DynamicFont" id=2]
 font_data = ExtResource( 1 )
@@ -222,6 +253,7 @@ anchor_bottom = 1.0
 rect_min_size = Vector2( 1024, 600 )
 
 [node name="CenterContainer" type="CenterContainer" parent="Panel"]
+editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 
@@ -397,6 +429,7 @@ margin_left = 28.1357
 margin_top = 17.759
 margin_right = 198.136
 margin_bottom = 68.759
+text = "127.0.0.1"
 
 [node name="YourIp" type="TextEdit" parent="Panel"]
 margin_left = 857.0
@@ -434,6 +467,22 @@ margin_right = 162.751
 margin_bottom = 591.745
 text = "Send"
 
+[node name="InfoLabel" type="Label" parent="Panel"]
+margin_left = 296.0
+margin_top = 50.0
+margin_right = 729.0
+margin_bottom = 92.0
+text = "RPSLS"
+align = 1
+valign = 1
+
+[node name="KillServer" type="Button" parent="Panel"]
+margin_left = 877.0
+margin_top = 556.0
+margin_right = 970.0
+margin_bottom = 576.0
+text = "Leave Server"
+
 [connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer/TextureButton" to="." method="_on_TextureButton_pressed"]
 [connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer/TextureButton2" to="." method="_on_TextureButton2_pressed"]
 [connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer/TextureButton3" to="." method="_on_TextureButton3_pressed"]
@@ -442,3 +491,4 @@ text = "Send"
 [connection signal="pressed" from="Panel/Button" to="." method="_on_Button_pressed"]
 [connection signal="pressed" from="Panel/Connect" to="." method="_on_Connect_pressed"]
 [connection signal="pressed" from="Panel/Send Message" to="." method="_on_Send_Message_pressed"]
+[connection signal="pressed" from="Panel/KillServer" to="." method="_on_KillServer_pressed"]
