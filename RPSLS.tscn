@@ -51,7 +51,7 @@ class RPSLS:
 		_win_against1 = w1
 		_win_against2 = w2
 
-	func decide(other) -> Winner:
+	func decide(other: RPSLS) -> Winner:
 		var n = other._choice
 		if n == _choice:
 			print(\"Tie.\")
@@ -81,6 +81,9 @@ var cpu_choices
 var cpu_choice = -1
 var connection
 
+func _process(delta: float) -> void:
+	set_score()
+
 func computer_choice():
 	return cpu_choices[randi() % len(cpu_choices)]
 
@@ -108,9 +111,11 @@ func _player_connected(id):
 	# Called on both clients and server when a peer connects. Send my info to it.
 	#rpc_id(id, \"register_player\", player_name)
 	restart_game()
+	$Panel/InfoLabel.text = \"Player Connected!\"
 	print(\"player connected\")
 
 func _player_disconnected(id):
+	$Panel/InfoLabel.text = \"Player Disconnected!\"
 	print(\"disconnected\")
 
 func _connected_ok():
@@ -124,6 +129,7 @@ func _connected_fail():
 	print(\"connected fail\")
 
 func restart_game():
+	other_player_choice = null
 	opponent_wins = 0
 	player_wins = 0
 	tie_games = 0
@@ -161,9 +167,6 @@ func set_score():
 	label2.text = \"Tie Games: %s\" % tie_games
 	label3.text = \"Computer Wins: %s\" % opponent_wins
 
-func _process(delta: float) -> void:
-	set_score()
-
 func check_local_or_mult_game(you, cpu):
 	if not connection:
 		check_game(you, cpu)
@@ -171,8 +174,7 @@ func check_local_or_mult_game(you, cpu):
 		check_mult_game(you)
 
 func check_mult_game(you):
-	if other_player_choice:
-		check_game(you, other_player_choice)
+	print(you)
 	rpc(\"send_choice\", you)
 
 func resize():
