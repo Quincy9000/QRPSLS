@@ -77,7 +77,7 @@ const SCISSORS = 2
 const LIZARD = 3
 const SPOCK = 4
 
-var cpu_choices
+var opponent_choices
 var cpu_choice = -1
 var connection
 
@@ -85,7 +85,9 @@ func _process(delta: float) -> void:
 	set_score()
 
 func computer_choice():
-	return cpu_choices[randi() % len(cpu_choices)]
+	#computer randomly selects a key and gives the value
+	var key = (opponent_choices.keys()[randi() % opponent_choices.keys().size()])
+	return opponent_choices[key]
 
 func check_game(player, other: RPSLS):
 	var c: Winner = other.decide(player)
@@ -100,8 +102,6 @@ func check_game(player, other: RPSLS):
 		tie_games += 1
 
 var other_player_choice
-
-var my_multi_choice
 
 remote func send_choice(my_choice):
 	print(my_choice)
@@ -136,6 +136,7 @@ func restart_game():
 	tie_games = 0
 
 func _ready() -> void:
+	get_node(\"/root\").connect(\"size_changed\", self, \"resize\")
 	get_tree().connect(\"network_peer_connected\", self, \"_player_connected\")
 	get_tree().connect(\"network_peer_disconnected\", self, \"_player_disconnected\")
 	get_tree().connect(\"connected_to_server\", self, \"_connected_ok\")
@@ -157,18 +158,22 @@ func _ready() -> void:
 	lizard = RPSLS.new(LIZARD, ROCK, SCISSORS, SPOCK, PAPER, \"Lizard poisons Spock.\", \"Lizard eats paper.\")
 	spock = RPSLS.new(SPOCK, LIZARD, PAPER, ROCK, SCISSORS, \"Spock vaporizes rock.\", \"Spock smashes scissors.\")
 
-	cpu_choices = [rock, paper, scissors, lizard, spock]
+	opponent_choices = {}
+
+	opponent_choices[\"rock\"] = rock
+	opponent_choices[\"paper\"] = paper
+	opponent_choices[\"scissors\"] = scissors
+	opponent_choices[\"lizard\"] = lizard
+	opponent_choices[\"spock\"] = spock
 
 	computer_choice()
-
-	get_node(\"/root\").connect(\"size_changed\", self, \"resize\")
 
 func set_score():
 	label.text = \"Player Wins: %s\" % player_wins
 	label2.text = \"Tie Games: %s\" % tie_games
 	label3.text = \"Computer Wins: %s\" % opponent_wins
 
-func check_local_or_mult_game(you, cpu):
+func check_local_or_mult_game(you: String, cpu):
 	if not connection:
 		check_game(you, cpu)
 	else:
@@ -189,23 +194,23 @@ func resize():
 
 func _on_TextureButton_pressed() -> void:
 	print(\"Rock\")
-	check_local_or_mult_game(rock, computer_choice())
+	check_local_or_mult_game(\"rock\", computer_choice())
 
 func _on_TextureButton2_pressed() -> void:
 	print(\"paper\")
-	check_local_or_mult_game(paper, computer_choice())
+	check_local_or_mult_game(\"paper\", computer_choice())
 
 func _on_TextureButton3_pressed() -> void:
 	print(\"scissors\")
-	check_local_or_mult_game(scissors, computer_choice())
+	check_local_or_mult_game(\"scissors\", computer_choice())
 
 func _on_TextureButton4_pressed() -> void:
 	print(\"lizard\")
-	check_local_or_mult_game(lizard, computer_choice())
+	check_local_or_mult_game(\"lizard\", computer_choice())
 
 func _on_TextureButton5_pressed() -> void:
 	print(\"spock\")
-	check_local_or_mult_game(spock, computer_choice())
+	check_local_or_mult_game(\"spock\", computer_choice())
 
 func _on_Connect_pressed() -> void:
 	get_tree().set_network_peer(null)
