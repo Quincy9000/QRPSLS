@@ -14,6 +14,22 @@ var player_wins = 0
 var tie_games = 0
 var opponent_wins = 0
 
+var rock
+var paper
+var scissors
+var lizard
+var spock
+
+const ROCK = 0
+const PAPER = 1
+const SCISSORS = 2
+const LIZARD = 3
+const SPOCK = 4
+
+var opponent_choices
+var cpu_choice = -1
+var connection
+
 export(int)var minX = 720
 export(int)var minY = 540
 
@@ -26,7 +42,7 @@ onready var label3 = $Panel/CenterContainer/VBoxContainer/MarginContainer4/Cente
 class Winner:
 	var number
 	var word
-	func _init(n, w):
+	func _init(n, w: String):
 		number = n
 		word = w
 
@@ -51,35 +67,21 @@ class RPSLS:
 		_win_against1 = w1
 		_win_against2 = w2
 
-	func decide(other: RPSLS) -> Winner:
+	func decide(other) -> Winner:
 		var n = other._choice
 		if n == _choice:
 			print(\"Tie.\")
 			return Winner.new(-1, \"Tie.\")
-		elif n == _counter1 or n == _counter2:
-			return Winner.new(0, other.decide(self).word)
+		elif n == _counter1:
+			return Winner.new(0, other.quote1)
+		elif n == _counter2:
+			return Winner.new(0, other.quote2)
 		elif n == _win_against1:
 			print(quote1)
 			return Winner.new(1, quote1)
 		else:
 			print(quote2)
 			return Winner.new(1, quote2)
-
-var rock
-var paper
-var scissors
-var lizard
-var spock
-
-const ROCK = 0
-const PAPER = 1
-const SCISSORS = 2
-const LIZARD = 3
-const SPOCK = 4
-
-var opponent_choices
-var cpu_choice = -1
-var connection
 
 func _process(delta: float) -> void:
 	set_score()
@@ -90,7 +92,7 @@ func computer_choice():
 	return opponent_choices[key]
 
 func check_game(player, other: RPSLS):
-	var c: Winner = other.decide(player)
+	var c: Winner = other.decide(opponent_choices[player])
 	$Panel/InfoLabel.text = c.word
 	if c.number == 1:
 		$Panel/InfoLabel.text += \" You Lose!\"
@@ -490,7 +492,6 @@ margin_top = 556.0
 margin_right = 970.0
 margin_bottom = 576.0
 text = "Leave Server"
-
 [connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer/TextureButton" to="." method="_on_TextureButton_pressed"]
 [connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer/TextureButton2" to="." method="_on_TextureButton2_pressed"]
 [connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer/TextureButton3" to="." method="_on_TextureButton3_pressed"]
