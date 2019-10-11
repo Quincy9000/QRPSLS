@@ -234,8 +234,8 @@ func _on_Button_pressed() -> void:
 	get_tree().set_network_peer(connection)
 
 func send_message():
-	rpc(\"write\", $Panel/ChatInput.text)
-	$Panel/ChatInput.text = \"\"
+	rpc(\"write\", $\"Panel/Send Message/ChatInput\".text)
+	$\"Panel/Send Message/ChatInput\".text = \"\"
 
 remotesync func write(msg):
 	$Panel/Chat.text += msg
