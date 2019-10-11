@@ -103,7 +103,7 @@ func check_game(player, other: RPSLS):
 	else:
 		tie_games += 1
 
-var other_player_choice
+var other_player_choice := String()
 
 remote func send_choice(my_choice):
 	print(my_choice)
@@ -132,7 +132,7 @@ func _connected_fail():
 	print(\"connected fail\")
 
 func restart_game():
-	other_player_choice = null
+	other_player_choice = \"\"
 	opponent_wins = 0
 	player_wins = 0
 	tie_games = 0
@@ -184,6 +184,8 @@ func check_local_or_mult_game(you: String, cpu):
 func check_mult_game(you):
 	print(you)
 	rpc(\"send_choice\", you)
+	if other_player_choice:
+		check_game(you, opponent_choices[other_player_choice])
 
 func resize():
     var currentSize = OS.get_window_size()
@@ -353,11 +355,11 @@ margin_right = -17.3524
 margin_bottom = -35.7925
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer2"]
-margin_right = 579.0
+margin_right = 578.0
 margin_bottom = 445.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer2/VBoxContainer"]
-margin_right = 579.0
+margin_right = 578.0
 margin_bottom = 220.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -384,7 +386,7 @@ stretch_mode = 4
 
 [node name="TextureButton3" type="TextureButton" parent="Panel/MarginContainer2/VBoxContainer/HBoxContainer"]
 margin_left = 388.0
-margin_right = 579.0
+margin_right = 578.0
 margin_bottom = 220.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -394,7 +396,7 @@ stretch_mode = 4
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="Panel/MarginContainer2/VBoxContainer"]
 margin_top = 224.0
-margin_right = 579.0
+margin_right = 578.0
 margin_bottom = 445.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -411,7 +413,7 @@ stretch_mode = 5
 
 [node name="TextureButton5" type="TextureButton" parent="Panel/MarginContainer2/VBoxContainer/HBoxContainer2"]
 margin_left = 291.0
-margin_right = 579.0
+margin_right = 578.0
 margin_bottom = 221.0
 size_flags_horizontal = 3
 texture_normal = ExtResource( 6 )
