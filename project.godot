@@ -20,10 +20,6 @@ run/main_scene="res://RPSLS.tscn"
 run/low_processor_mode=true
 config/icon="res://icon.png"
 
-[display]
-
-window/stretch/mode="viewport"
-
 [rendering]
 
 environment/default_environment="res://default_env.tres"

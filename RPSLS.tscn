@@ -33,11 +33,11 @@ var connection
 export(int)var minX = 720
 export(int)var minY = 540
 
-onready var label = $Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer/MarginContainer/Label
+onready var label = $Panel/MarginContainer4/HBoxContainer/MarginContainer/Label
 
-onready var label2 = $Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer/MarginContainer2/Label2
+onready var label2 = $Panel/MarginContainer4/HBoxContainer/MarginContainer2/Label2
 
-onready var label3 = $Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer/MarginContainer3/Label3
+onready var label3 = $Panel/MarginContainer4/HBoxContainer/MarginContainer3/Label3
 
 class Winner:
 	var number
@@ -150,7 +150,7 @@ func _ready() -> void:
 
 	print(output)
 
-	$Panel/YourIp.text = \"IP\\n\" + str(output[0])
+	$Panel/Button/YourIp.text = \"IP\\n\" + str(output[0])
 
 	randomize()
 
@@ -171,9 +171,9 @@ func _ready() -> void:
 	computer_choice()
 
 func set_score():
-	label.text = \"Player Wins: %s\" % player_wins
-	label2.text = \"Tie Games: %s\" % tie_games
-	label3.text = \"Computer Wins: %s\" % opponent_wins
+	label.text = \"Player Wins:\\n%s\" % player_wins
+	label2.text = \"Tie Games:\\n%s\" % tie_games
+	label3.text = \"Computer Wins:\\n%s\" % opponent_wins
 
 func check_local_or_mult_game(you: String, cpu):
 	if not connection:
@@ -262,37 +262,27 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 rect_min_size = Vector2( 1024, 600 )
 
-[node name="CenterContainer" type="CenterContainer" parent="Panel"]
+[node name="MarginContainer4" type="MarginContainer" parent="Panel"]
 editor/display_folded = true
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/CenterContainer"]
-editor/display_folded = true
-margin_left = 90.0
-margin_right = 933.0
-margin_bottom = 602.0
-
-[node name="MarginContainer4" type="MarginContainer" parent="Panel/CenterContainer/VBoxContainer"]
-margin_right = 843.0
-margin_bottom = 93.0
-size_flags_vertical = 0
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -421.5
+margin_right = 421.5
+margin_bottom = 101.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 custom_constants/margin_right = 60
 custom_constants/margin_left = 60
 custom_constants/margin_bottom = 50
 
-[node name="CenterContainer" type="CenterContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer4"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer4"]
 margin_left = 60.0
 margin_right = 783.0
-margin_bottom = 43.0
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer"]
-margin_right = 723.0
-margin_bottom = 43.0
+margin_bottom = 51.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="Panel/MarginContainer4/HBoxContainer"]
 margin_right = 231.0
 margin_bottom = 43.0
 size_flags_horizontal = 3
@@ -302,7 +292,7 @@ custom_constants/margin_top = 10
 custom_constants/margin_left = 70
 custom_constants/margin_bottom = 10
 
-[node name="Label" type="Label" parent="Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer/MarginContainer"]
+[node name="Label" type="Label" parent="Panel/MarginContainer4/HBoxContainer/MarginContainer"]
 margin_left = 70.0
 margin_top = 10.0
 margin_right = 161.0
@@ -310,8 +300,9 @@ margin_bottom = 33.0
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 2 )
 text = "Player Wins: "
+align = 1
 
-[node name="MarginContainer2" type="MarginContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer"]
+[node name="MarginContainer2" type="MarginContainer" parent="Panel/MarginContainer4/HBoxContainer"]
 margin_left = 235.0
 margin_right = 458.0
 margin_bottom = 43.0
@@ -322,7 +313,7 @@ custom_constants/margin_top = 10
 custom_constants/margin_left = 70
 custom_constants/margin_bottom = 10
 
-[node name="Label2" type="Label" parent="Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer/MarginContainer2"]
+[node name="Label2" type="Label" parent="Panel/MarginContainer4/HBoxContainer/MarginContainer2"]
 margin_left = 70.0
 margin_top = 10.0
 margin_right = 153.0
@@ -330,8 +321,9 @@ margin_bottom = 33.0
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 2 )
 text = "Tie Games: "
+align = 1
 
-[node name="MarginContainer3" type="MarginContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer"]
+[node name="MarginContainer3" type="MarginContainer" parent="Panel/MarginContainer4/HBoxContainer"]
 margin_left = 462.0
 margin_right = 723.0
 margin_bottom = 43.0
@@ -342,7 +334,7 @@ custom_constants/margin_top = 10
 custom_constants/margin_left = 70
 custom_constants/margin_bottom = 10
 
-[node name="Label3" type="Label" parent="Panel/CenterContainer/VBoxContainer/MarginContainer4/CenterContainer/HBoxContainer/MarginContainer3"]
+[node name="Label3" type="Label" parent="Panel/MarginContainer4/HBoxContainer/MarginContainer3"]
 margin_left = 70.0
 margin_top = 10.0
 margin_right = 191.0
@@ -350,89 +342,81 @@ margin_bottom = 33.0
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 2 )
 text = "Computer Wins: "
+align = 1
 
-[node name="MarginContainer2" type="MarginContainer" parent="Panel/CenterContainer/VBoxContainer"]
-margin_top = 97.0
-margin_right = 843.0
-margin_bottom = 602.0
+[node name="MarginContainer2" type="MarginContainer" parent="Panel"]
+anchor_right = 0.832
+anchor_bottom = 1.0
+margin_left = 255.616
+margin_top = 119.207
+margin_right = -17.3524
+margin_bottom = -35.7925
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2"]
-margin_right = 843.0
-margin_bottom = 505.0
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer2"]
+margin_right = 579.0
+margin_bottom = 445.0
 
-[node name="CenterContainer" type="CenterContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
-margin_right = 843.0
-margin_bottom = 245.0
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer2/VBoxContainer"]
+margin_right = 579.0
+margin_bottom = 220.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer"]
-margin_left = 101.0
-margin_right = 742.0
-margin_bottom = 245.0
-
-[node name="TextureButton" type="TextureButton" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer"]
-margin_right = 211.3
-margin_bottom = 245.88
-rect_min_size = Vector2( 211.3, 245.88 )
-size_flags_horizontal = 0
-size_flags_vertical = 0
-size_flags_stretch_ratio = 0.0
+[node name="TextureButton" type="TextureButton" parent="Panel/MarginContainer2/VBoxContainer/HBoxContainer"]
+margin_right = 190.0
+margin_bottom = 220.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 texture_normal = ExtResource( 2 )
 expand = true
-stretch_mode = 3
+stretch_mode = 4
 
-[node name="TextureButton2" type="TextureButton" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer"]
-margin_left = 215.0
-margin_right = 426.3
-margin_bottom = 245.88
-rect_min_size = Vector2( 211.3, 245.88 )
-size_flags_horizontal = 0
-size_flags_vertical = 0
-size_flags_stretch_ratio = 0.0
+[node name="TextureButton2" type="TextureButton" parent="Panel/MarginContainer2/VBoxContainer/HBoxContainer"]
+margin_left = 194.0
+margin_right = 384.0
+margin_bottom = 220.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 texture_normal = ExtResource( 3 )
 expand = true
-stretch_mode = 3
+stretch_mode = 4
 
-[node name="TextureButton3" type="TextureButton" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer"]
-margin_left = 430.0
-margin_right = 641.3
-margin_bottom = 245.88
-rect_min_size = Vector2( 211.3, 245.88 )
-size_flags_horizontal = 0
-size_flags_vertical = 0
-size_flags_stretch_ratio = 0.0
+[node name="TextureButton3" type="TextureButton" parent="Panel/MarginContainer2/VBoxContainer/HBoxContainer"]
+margin_left = 388.0
+margin_right = 579.0
+margin_bottom = 220.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 texture_normal = ExtResource( 4 )
 expand = true
-stretch_mode = 3
+stretch_mode = 4
 
-[node name="CenterContainer2" type="CenterContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
-margin_top = 249.0
-margin_right = 843.0
-margin_bottom = 505.0
+[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/MarginContainer2/VBoxContainer"]
+margin_top = 224.0
+margin_right = 579.0
+margin_bottom = 445.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+alignment = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer2"]
-margin_left = 163.0
-margin_right = 679.0
-margin_bottom = 256.0
-
-[node name="TextureButton4" type="TextureButton" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer2/HBoxContainer2"]
-margin_right = 256.0
-margin_bottom = 256.0
+[node name="TextureButton4" type="TextureButton" parent="Panel/MarginContainer2/VBoxContainer/HBoxContainer2"]
+margin_right = 287.0
+margin_bottom = 221.0
+size_flags_horizontal = 3
 texture_normal = ExtResource( 5 )
-stretch_mode = 2
+expand = true
+stretch_mode = 5
 
-[node name="TextureButton5" type="TextureButton" parent="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer2/HBoxContainer2"]
-margin_left = 260.0
-margin_right = 516.0
-margin_bottom = 256.0
+[node name="TextureButton5" type="TextureButton" parent="Panel/MarginContainer2/VBoxContainer/HBoxContainer2"]
+margin_left = 291.0
+margin_right = 579.0
+margin_bottom = 221.0
+size_flags_horizontal = 3
 texture_normal = ExtResource( 6 )
-stretch_mode = 2
-
-[node name="Button" type="Button" parent="Panel"]
-margin_left = 874.239
-margin_top = 87.5346
-margin_right = 932.239
-margin_bottom = 107.535
-text = "CREATE"
+expand = true
+stretch_mode = 5
 
 [node name="IP" type="TextEdit" parent="Panel"]
 margin_left = 28.1357
@@ -441,28 +425,6 @@ margin_right = 198.136
 margin_bottom = 68.759
 text = "127.0.0.1"
 
-[node name="YourIp" type="TextEdit" parent="Panel"]
-margin_left = 857.0
-margin_top = 13.0
-margin_right = 967.0
-margin_bottom = 69.0
-text = "YOUR IP:
-192.168.1.1"
-
-[node name="Chat" type="TextEdit" parent="Panel"]
-margin_left = 22.0
-margin_top = 121.0
-margin_right = 173.0
-margin_bottom = 501.0
-readonly = true
-wrap_enabled = true
-
-[node name="ChatInput" type="TextEdit" parent="Panel"]
-margin_left = 23.4598
-margin_top = 512.784
-margin_right = 227.46
-margin_bottom = 562.784
-
 [node name="Connect" type="Button" parent="Panel"]
 margin_left = 62.0499
 margin_top = 83.1025
@@ -470,34 +432,81 @@ margin_right = 135.05
 margin_bottom = 103.103
 text = "CONNECT"
 
+[node name="Button" type="Button" parent="Panel"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -84.9298
+margin_top = 95.574
+margin_right = -26.9298
+margin_bottom = 115.574
+text = "CREATE"
+
+[node name="YourIp" type="TextEdit" parent="Panel/Button"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -146.0
+margin_top = -80.0
+margin_right = -1.0
+margin_bottom = -12.0
+text = "YOUR IP:
+192.168.1.1"
+
+[node name="Chat" type="TextEdit" parent="Panel"]
+anchor_bottom = 1.0
+margin_left = 22.0
+margin_top = 121.0
+margin_right = 225.0
+margin_bottom = -99.0
+readonly = true
+wrap_enabled = true
+
 [node name="Send Message" type="Button" parent="Panel"]
+editor/display_folded = true
+anchor_top = 1.0
+anchor_bottom = 1.0
 margin_left = 89.7507
-margin_top = 571.745
+margin_top = -28.255
 margin_right = 162.751
-margin_bottom = 591.745
+margin_bottom = -8.255
 text = "Send"
 
+[node name="ChatInput" type="TextEdit" parent="Panel/Send Message"]
+margin_left = -66.2909
+margin_top = -58.961
+margin_right = 137.709
+margin_bottom = -8.961
+
 [node name="InfoLabel" type="Label" parent="Panel"]
-margin_left = 296.0
-margin_top = 50.0
-margin_right = 729.0
-margin_bottom = 92.0
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -222.0
+margin_top = 68.759
+margin_right = 211.0
+margin_bottom = 110.759
 text = "RPSLS"
 align = 1
 valign = 1
+__meta__ = {
+"_edit_ik_": true
+}
 
 [node name="KillServer" type="Button" parent="Panel"]
-margin_left = 877.0
-margin_top = 556.0
-margin_right = 970.0
-margin_bottom = 576.0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -147.0
+margin_top = -44.0
+margin_right = -54.0
+margin_bottom = -24.0
 text = "Leave Server"
-[connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer/TextureButton" to="." method="_on_TextureButton_pressed"]
-[connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer/TextureButton2" to="." method="_on_TextureButton2_pressed"]
-[connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer/HBoxContainer/TextureButton3" to="." method="_on_TextureButton3_pressed"]
-[connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer2/HBoxContainer2/TextureButton4" to="." method="_on_TextureButton4_pressed"]
-[connection signal="pressed" from="Panel/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/CenterContainer2/HBoxContainer2/TextureButton5" to="." method="_on_TextureButton5_pressed"]
-[connection signal="pressed" from="Panel/Button" to="." method="_on_Button_pressed"]
+
+[connection signal="pressed" from="Panel/MarginContainer2/VBoxContainer/HBoxContainer/TextureButton" to="." method="_on_TextureButton_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer2/VBoxContainer/HBoxContainer/TextureButton2" to="." method="_on_TextureButton2_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer2/VBoxContainer/HBoxContainer/TextureButton3" to="." method="_on_TextureButton3_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer2/VBoxContainer/HBoxContainer2/TextureButton4" to="." method="_on_TextureButton4_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer2/VBoxContainer/HBoxContainer2/TextureButton5" to="." method="_on_TextureButton5_pressed"]
 [connection signal="pressed" from="Panel/Connect" to="." method="_on_Connect_pressed"]
+[connection signal="pressed" from="Panel/Button" to="." method="_on_Button_pressed"]
 [connection signal="pressed" from="Panel/Send Message" to="." method="_on_Send_Message_pressed"]
 [connection signal="pressed" from="Panel/KillServer" to="." method="_on_KillServer_pressed"]
