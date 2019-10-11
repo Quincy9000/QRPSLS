@@ -67,7 +67,7 @@ class RPSLS:
 		_win_against1 = w1
 		_win_against2 = w2
 
-	func decide(other) -> Winner:
+	func decide(other: RPSLS) -> Winner:
 		var n = other._choice
 		if n == _choice:
 			print(\"Tie.\")
@@ -105,15 +105,16 @@ func check_game(player, other):
 
 var other_player_choice := String()
 
-var did_I_send_choice = \"\"
+var did_I_send_choice: String = \"\"
 
 remote func send_choice(my_choice):
 	print(my_choice)
 	$Panel/InfoLabel.text = \"Opponent sent their choice!\"
 	other_player_choice = my_choice
-	if did_I_send_choice:
-		check_game(did_I_send_choice, opponent_choices[opponent_choices])
-
+	if did_I_send_choice != \"\":
+		check_game(did_I_send_choice, opponent_choices[other_player_choice])
+		did_I_send_choice = \"\"
+		other_player_choice = \"\"
 func _player_connected(id):
 	# Called on both clients and server when a peer connects. Send my info to it.
 	#rpc_id(id, \"register_player\", player_name)
@@ -183,13 +184,12 @@ func check_local_or_mult_game(you: String, cpu):
 	if not connection:
 		check_game(you, cpu)
 	else:
-		did_I_send_choice = true
 		check_mult_game(you)
 
-func check_mult_game(you):
+func check_mult_game(you: String):
 	print(you)
 	rpc(\"send_choice\", you)
-	if other_player_choice:
+	if other_player_choice != \"\":
 		check_game(you, opponent_choices[other_player_choice])
 		other_player_choice = \"\"
 
@@ -210,7 +210,7 @@ func _on_TextureButton_pressed() -> void:
 
 func _on_TextureButton2_pressed() -> void:
 	print(\"paper\")
-	did_I_send_choice = paper
+	did_I_send_choice = \"paper\"
 	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_TextureButton3_pressed() -> void:
