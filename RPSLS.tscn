@@ -115,6 +115,7 @@ remote func send_choice(my_choice):
 		check_game(did_I_send_choice, opponent_choices[other_player_choice])
 		did_I_send_choice = \"\"
 		other_player_choice = \"\"
+
 func _player_connected(id):
 	# Called on both clients and server when a peer connects. Send my info to it.
 	#rpc_id(id, \"register_player\", player_name)
@@ -188,7 +189,8 @@ func check_local_or_mult_game(you: String, cpu):
 
 func check_mult_game(you: String):
 	print(you)
-	rpc(\"send_choice\", you)
+	if get_tree().get_network_peer():
+		rpc(\"send_choice\", you)
 	if other_player_choice != \"\":
 		check_game(you, opponent_choices[other_player_choice])
 		other_player_choice = \"\"
