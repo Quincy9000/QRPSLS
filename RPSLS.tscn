@@ -91,7 +91,7 @@ func computer_choice():
 	var key = (opponent_choices.keys()[randi() % opponent_choices.keys().size()])
 	return opponent_choices[key]
 
-func check_game(player, other: RPSLS):
+func check_game(player, other):
 	var c: Winner = other.decide(opponent_choices[player])
 	$Panel/InfoLabel.text = c.word
 	if c.number == 1:
@@ -105,10 +105,14 @@ func check_game(player, other: RPSLS):
 
 var other_player_choice := String()
 
+var did_I_send_choice = \"\"
+
 remote func send_choice(my_choice):
 	print(my_choice)
 	$Panel/InfoLabel.text = \"Opponent sent their choice!\"
 	other_player_choice = my_choice
+	if did_I_send_choice:
+		check_game(did_I_send_choice, opponent_choices[opponent_choices])
 
 func _player_connected(id):
 	# Called on both clients and server when a peer connects. Send my info to it.
@@ -179,6 +183,7 @@ func check_local_or_mult_game(you: String, cpu):
 	if not connection:
 		check_game(you, cpu)
 	else:
+		did_I_send_choice = true
 		check_mult_game(you)
 
 func check_mult_game(you):
@@ -186,6 +191,8 @@ func check_mult_game(you):
 	rpc(\"send_choice\", you)
 	if other_player_choice:
 		check_game(you, opponent_choices[other_player_choice])
+		other_player_choice = \"\"
+
 
 func resize():
     var currentSize = OS.get_window_size()
@@ -198,23 +205,28 @@ func resize():
 
 func _on_TextureButton_pressed() -> void:
 	print(\"Rock\")
-	check_local_or_mult_game(\"rock\", computer_choice())
+	did_I_send_choice = \"rock\"
+	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_TextureButton2_pressed() -> void:
 	print(\"paper\")
-	check_local_or_mult_game(\"paper\", computer_choice())
+	did_I_send_choice = paper
+	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_TextureButton3_pressed() -> void:
 	print(\"scissors\")
-	check_local_or_mult_game(\"scissors\", computer_choice())
+	did_I_send_choice = \"scissors\"
+	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_TextureButton4_pressed() -> void:
 	print(\"lizard\")
-	check_local_or_mult_game(\"lizard\", computer_choice())
+	did_I_send_choice = \"lizard\"
+	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_TextureButton5_pressed() -> void:
 	print(\"spock\")
-	check_local_or_mult_game(\"spock\", computer_choice())
+	did_I_send_choice = \"spock\"
+	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_Connect_pressed() -> void:
 	get_tree().set_network_peer(null)
