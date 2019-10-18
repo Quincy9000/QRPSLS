@@ -105,10 +105,9 @@ func check_game(player, other):
 
 var other_player_choice := String()
 
-var did_I_send_choice: String = \"\"
+var did_I_send_choice:= String()
 
 remote func send_choice(my_choice):
-	print(my_choice)
 	$Panel/InfoLabel.text = \"Opponent sent their choice!\"
 	other_player_choice = my_choice
 	if did_I_send_choice != \"\":
@@ -117,8 +116,6 @@ remote func send_choice(my_choice):
 		other_player_choice = \"\"
 
 func _player_connected(id):
-	# Called on both clients and server when a peer connects. Send my info to it.
-	#rpc_id(id, \"register_player\", player_name)
 	restart_game()
 	$Panel/InfoLabel.text = \"Player Connected!\"
 	print(\"player connected\")
@@ -188,13 +185,11 @@ func check_local_or_mult_game(you: String, cpu):
 		check_mult_game(you)
 
 func check_mult_game(you: String):
-	print(you)
 	if get_tree().get_network_peer():
 		rpc(\"send_choice\", you)
 	if other_player_choice != \"\":
 		check_game(you, opponent_choices[other_player_choice])
 		other_player_choice = \"\"
-
 
 func resize():
     var currentSize = OS.get_window_size()
@@ -211,28 +206,23 @@ func _on_TextureButton_pressed() -> void:
 	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_TextureButton2_pressed() -> void:
-	print(\"paper\")
 	did_I_send_choice = \"paper\"
 	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_TextureButton3_pressed() -> void:
-	print(\"scissors\")
 	did_I_send_choice = \"scissors\"
 	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_TextureButton4_pressed() -> void:
-	print(\"lizard\")
 	did_I_send_choice = \"lizard\"
 	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_TextureButton5_pressed() -> void:
-	print(\"spock\")
 	did_I_send_choice = \"spock\"
 	check_local_or_mult_game(did_I_send_choice, computer_choice())
 
 func _on_Connect_pressed() -> void:
 	get_tree().set_network_peer(null)
-	print(\"joining server\")
 	$Panel/InfoLabel.text = \"Joining Server %s!\" % $Panel/IP.text
 	connection = NetworkedMultiplayerENet.new()
 	var ip = $Panel/IP.text.strip_edges()
@@ -241,7 +231,6 @@ func _on_Connect_pressed() -> void:
 
 func _on_Button_pressed() -> void:
 	get_tree().set_network_peer(null)
-	print(\"creating server\")
 	$Panel/InfoLabel.text = \"Creating Server, Give IP to friend!\"
 	connection = NetworkedMultiplayerENet.new()
 	connection.create_server(4567, 2)
@@ -361,6 +350,7 @@ text = "Computer Wins: "
 align = 1
 
 [node name="MarginContainer2" type="MarginContainer" parent="Panel"]
+editor/display_folded = true
 anchor_right = 0.832
 anchor_bottom = 1.0
 margin_left = 255.616
